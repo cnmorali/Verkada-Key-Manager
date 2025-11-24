@@ -1,8 +1,7 @@
 # Verkada Key Manager
 
-A small full-stack project that connects a Verkada **AX11** access controller to a custom keybox.  
-Keys are tracked using AUX inputs, and all events (take/return) are logged in Supabase along with
-the user who badged and a camera snapshot.
+A small full-stack project that connects a Verkada AX11 to a custom 3d printed keybox.  
+Keys are tracked using AUX inputs, and all events (take/return) are logged in Supabase along with the user who badged and a camera snapshot.
 
 This repo contains:
 
