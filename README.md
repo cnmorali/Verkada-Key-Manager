@@ -30,13 +30,11 @@ supabase/functions/ax11-webhook/index.ts
 
 Frontend uses:
 
-```bash
 VITE_SUPABASE_URL
 VITE_SUPABASE_ANON_KEY
 
 Backend secrets are managed in Supabase:
 
-```bash
 PROJECT_URL
 SERVICE_ROLE_KEY
 VERKADA_API_KEY
