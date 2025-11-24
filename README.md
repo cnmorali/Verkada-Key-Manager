@@ -17,24 +17,27 @@ This repo contains:
 ```bash
 npm install
 npm run dev
+```
 
 The dashboard will open at the URL printed in your terminal.
 
 ## Backend (Supabase Edge Function)
 
 The backend logic lives in:
-
+```
 supabase/functions/ax11-webhook/index.ts
+```
 
 ## Environment Variables
 
 Frontend uses:
-
+```
 VITE_SUPABASE_URL
 VITE_SUPABASE_ANON_KEY
+```
 
 Backend secrets are managed in Supabase:
-
+```
 PROJECT_URL
 SERVICE_ROLE_KEY
 VERKADA_API_KEY
@@ -42,6 +45,7 @@ VERKADA_SHARED_SECRET
 ACCESS_CONTROLLER_ID
 CAMERA_ID
 KEYMAP
+```
 
 ## Notes
 
