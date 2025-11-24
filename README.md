@@ -2,13 +2,11 @@
 
 A small full-stack project that connects a Verkada AX11 to a custom 3d printed keybox. Keys are tracked using AUX inputs, and all events (take/return) are logged in Supabase along with the user who badged and a camera snapshot.
 
-## Components:
+## Components
 
 - A React + Vite frontend (the dashboard)
 - A Supabase Edge Function (`ax11-webhook`) that processes AX11 webhooks
 - Database tables for event logs, ongoing events, and key states
-
----
 
 ## Running the Frontend
 
@@ -16,7 +14,6 @@ A small full-stack project that connects a Verkada AX11 to a custom 3d printed k
 npm install
 npm run dev
 ```
-
 The dashboard will open at the URL printed in your terminal.
 
 ## Backend (Supabase Edge Function)
