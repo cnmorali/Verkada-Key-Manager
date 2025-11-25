@@ -48,6 +48,6 @@ Do not commit .env files - they are already ignored.
 
 AX11 device IDs and the key mapping are stored in Supabase secrets.
 
-The project requires a live AX11, camera, and Verkada org to generate real events.
+The project requires a live AX11, reader, camera, and Verkada org to generate real events.
 
 
