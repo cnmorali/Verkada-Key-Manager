@@ -1,6 +1,12 @@
+Technologies Used: React, TypeScript, Vite, Tailwind CSS, shadcn/ui, Supabase (DB + Edge Functions), Verkada Public APIs, Node.js
+
 # Verkada Key Manager
 
 A small full-stack project that connects a Verkada AX11 to a custom 3d printed keybox. Keys are tracked using AUX inputs, and all events (take/return) are logged in Supabase along with the user who badged and a camera snapshot.
+
+<div align="center">
+  <img width="1512" height="828" alt="KMUI" src="https://github.com/user-attachments/assets/00644e72-fee1-4a86-ba06-34cfaf7b6553" />
+</div>
 
 ## Components
 
