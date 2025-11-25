@@ -10,8 +10,8 @@ A small full-stack project that connects a Verkada AX11 to a custom 3d printed k
 
 ## Components
 
-- A React + Vite frontend (the dashboard)
-- A Supabase Edge Function (`ax11-webhook`) that processes AX11 webhooks
+- A React + Vite frontend
+- A Supabase Edge Function (ax11-webhook) that processes AX11 webhooks
 - Database tables for event logs, ongoing events, and key states
 
 ## Running the Frontend
@@ -50,10 +50,7 @@ KEYMAP
 
 ## Notes
 
-Do not commit .env files - they are already ignored.
-
-AX11 device IDs and the key mapping are stored in Supabase secrets.
-
-The project requires a live AX11, reader, camera, and Verkada org to generate real events.
+- AX11 device IDs and the key mapping are stored in Supabase secrets
+- The project requires a live AX11, reader, camera, and Verkada org to generate real events
 
 
