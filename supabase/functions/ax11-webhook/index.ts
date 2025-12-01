@@ -311,12 +311,37 @@ async function handleEvent(rawBody: string) {
       const nowTs = Date.now();
 
       // Ignore return if < 1s after take
-      if (nowTs - takeTs < 1000) {
+      if (nowTs - takeTs < 2000) {
         console.log("[DEBOUNCE] RETURN too soon after TAKE — ignoring");
         return new Response(JSON.stringify({ ignored: true }), { status: 200 });
       }
     }
   }
+
+  //------------------------------------------------------
+  // Prevent rapid duplicate TAKEs (AUX bounce / double webhook)
+  //------------------------------------------------------
+  if (action === "take") {
+    const { data: lastOngoing } = await supabase
+      .from("ongoing_events")
+      .select("time_taken")
+      .eq("key_number", keyNumber)
+      .order("time_taken", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (lastOngoing?.time_taken) {
+      const lastTs = new Date(lastOngoing.time_taken).getTime();
+      const nowTs = Date.now();
+
+      // Ignore a second TAKE if it happens within 2 seconds
+      if (nowTs - lastTs < 2000) {
+        console.log("[DEBOUNCE] TAKE too soon after previous — ignoring");
+        return new Response(JSON.stringify({ ignored: true }), { status: 200 });
+      }
+    }
+  }
+
 
   //------------------------------------------------------
   // Resolve user
@@ -364,6 +389,43 @@ async function handleEvent(rawBody: string) {
   const timestamp = new Date().toISOString();  // Timestamp for database
 
   //------------------------------------------------------
+  // Atomic key state update (prevents double takes/returns)
+  //------------------------------------------------------
+  if (action === "take") {
+    const { data: updated } = await supabase
+      .from("keys")
+      .update({
+        status: "taken",
+        assigned_user: userName,
+        updated_at: timestamp,
+      })
+      .eq("key_number", keyNumber)
+      .neq("status", "taken")       // only update if not already taken
+      .select("key_number");
+
+    if (!updated || updated.length === 0) {
+      console.log("[DEBOUNCE] Concurrent/duplicate TAKE — key already taken");
+      return new Response(JSON.stringify({ ignored: true }), { status: 200 });
+    }
+  } else {
+    const { data: updated } = await supabase
+      .from("keys")
+      .update({
+        status: "present",
+        assigned_user: null,
+        updated_at: timestamp,
+      })
+      .eq("key_number", keyNumber)
+      .neq("status", "present")    // only update if not already present
+      .select("key_number");
+
+    if (!updated || updated.length === 0) {
+      console.log("[DEBOUNCE] Duplicate RETURN — key already present");
+      return new Response(JSON.stringify({ ignored: true }), { status: 200 });
+    }
+  }
+
+  //------------------------------------------------------
   // Insert into event_log table
   //------------------------------------------------------
   await supabase.from("event_log").insert({
@@ -391,22 +453,7 @@ async function handleEvent(rawBody: string) {
       .delete()
       .eq("key_number", keyNumber);
   }
-
-  //------------------------------------------------------
-  // Update keys table
-  //------------------------------------------------------
-  await supabase
-    .from("keys")
-    .update({
-      status: action === "take" ? "taken" : "present",
-      assigned_user: action === "take" ? userName : null,
-      updated_at: timestamp,
-    })
-    .eq("key_number", keyNumber);
-
-  return new Response(JSON.stringify({ success: true }), {
-    headers: { "Content-Type": "application/json" },
-  });
+  
 }
 
 //--------------------------------------------------------------
@@ -418,7 +465,7 @@ Deno.serve(async req => {
     req.headers.get("x-verkada-signature") ||
     req.headers.get("X-Verkada-Signature");
 
-  if (!signature) return handleEvent(rawBody);
+  if (!signature) return await handleEvent(rawBody);
 
   const key = await crypto.subtle.importKey(
     "raw",
@@ -445,5 +492,6 @@ Deno.serve(async req => {
     return new Response("Unauthorized", { status: 401 });
 }
 
-  return handleEvent(rawBody);
+  return await handleEvent(rawBody);
+
 });
